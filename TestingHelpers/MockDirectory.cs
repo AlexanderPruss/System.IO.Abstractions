@@ -177,8 +177,7 @@ namespace System.IO.Abstractions.TestingHelpers
         private string[] GetFilesInternal(IEnumerable<string> files, string path, string searchPattern, SearchOption searchOption)
         {
             CheckSearchPattern(searchPattern);
-            path = EnsurePathEndsWithDirectorySeparator(path);
-            path = mockFileDataAccessor.Path.GetFullPath(path);
+            path = EnsurePathEndsWithDirectorySeparator(path);            
 
             bool isUnix = XFS.IsUnixPlatform();
 
@@ -419,6 +418,7 @@ namespace System.IO.Abstractions.TestingHelpers
         public override IEnumerable<string> EnumerateDirectories(string path, string searchPattern, SearchOption searchOption)
         {
             mockFileDataAccessor.PathVerifier.IsLegalAbsoluteOrRelative(path, "path");
+            path = mockFileDataAccessor.Path.GetFullPath(path);
 
             path = EnsurePathEndsWithDirectorySeparator(path);
 
