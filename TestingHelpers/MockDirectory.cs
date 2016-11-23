@@ -321,10 +321,18 @@ namespace System.IO.Abstractions.TestingHelpers
             return parent;
         }
 
-        public override void Move(string sourceDirName, string destDirName)
+        public override void Move(string sourceName, string destName)
         {
-            var fullSourcePath = EnsurePathEndsWithDirectorySeparator(mockFileDataAccessor.Path.GetFullPath(sourceDirName));
-            var fullDestPath = EnsurePathEndsWithDirectorySeparator(mockFileDataAccessor.Path.GetFullPath(destDirName));
+            //if we're moving a file, not a directory, call the appropriate file moving function.
+            var fileData = mockFileDataAccessor.GetFile((mockFileDataAccessor.Path.GetFullPath(sourceName)));
+            if (fileData != null && (fileData.Attributes & FileAttributes.Directory) == 0)
+            {
+                fileBase.Move(sourceName, destName);
+                return;
+            }
+
+            var fullSourcePath = EnsurePathEndsWithDirectorySeparator(mockFileDataAccessor.Path.GetFullPath(sourceName));
+            var fullDestPath = EnsurePathEndsWithDirectorySeparator(mockFileDataAccessor.Path.GetFullPath(destName));
 
             if (string.Equals(fullSourcePath, fullDestPath, StringComparison.OrdinalIgnoreCase))
             {
