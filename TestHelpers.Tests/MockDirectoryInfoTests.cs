@@ -18,6 +18,7 @@ namespace System.IO.Abstractions.TestingHelpers.Tests
             }
         }
 
+        [Test]
         [TestCaseSource("MockDirectoryInfo_GetExtension_Cases")]
         public void MockDirectoryInfo_GetExtension_ShouldReturnEmptyString(string directoryPath)
         {
@@ -41,6 +42,7 @@ namespace System.IO.Abstractions.TestingHelpers.Tests
             }
         }
 
+        [Test]
         [TestCaseSource("MockDirectoryInfo_Exists_Cases")]
         public void MockDirectoryInfo_Exists(string path, bool expected)
         {
@@ -207,6 +209,7 @@ namespace System.IO.Abstractions.TestingHelpers.Tests
             }
         }
 
+        [Test]
         [TestCaseSource("MockDirectoryInfo_FullName_Data")]
         public void MockDirectoryInfo_FullName_ShouldReturnNormalizedPath(string directoryPath, string expectedFullName)
         {

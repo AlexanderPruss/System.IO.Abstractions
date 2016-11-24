@@ -720,6 +720,7 @@ namespace System.IO.Abstractions.TestingHelpers.Tests
             yield return @"aaa\vv..\";
         }
 
+        [Test]
         [TestCaseSource("GetSearchPatternForTwoDotsExceptions")]
         public void MockDirectory_GetFiles_ShouldThrowAnArgumentException_IfSearchPatternContainsTwoDotsFollowedByOneDirectoryPathSep(string searchPattern)
         {
@@ -1034,6 +1035,7 @@ namespace System.IO.Abstractions.TestingHelpers.Tests
             Assert.IsTrue(fileSystem.File.Exists(@"C:\NewLocation\Data\someFile.txt"));
         }
 
+        [Test]
         [TestCaseSource("GetPathsForMoving")]
         public void MockDirectory_Move_ShouldMoveDirectories(string sourceDirName, string destDirName, string filePathOne, string filePathTwo)
         {
