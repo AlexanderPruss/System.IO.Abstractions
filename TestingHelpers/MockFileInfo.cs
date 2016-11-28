@@ -314,5 +314,10 @@ namespace System.IO.Abstractions.TestingHelpers
                 return MockFileData.Contents.LongLength;
             }
         }
+
+        public override string ToString()
+        {
+            return FullName + ", exists: " + Exists;
+        }
     }
 }
