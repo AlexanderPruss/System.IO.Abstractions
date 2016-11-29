@@ -407,6 +407,7 @@ namespace System.IO.Abstractions.TestingHelpers.Tests
             yield return new ASCIIEncoding();
         }
 
+        [Test]
         [TestCaseSource("GetEncodingsForReadAllText")]
         public void MockFile_ReadAllText_ShouldReturnTheOriginalContentWhenTheFileContainsDifferentEncodings(Encoding encoding)
         {

@@ -720,6 +720,7 @@ namespace System.IO.Abstractions.TestingHelpers.Tests
             yield return @"aaa\vv..\";
         }
 
+        [Test]
         [TestCaseSource("GetSearchPatternForTwoDotsExceptions")]
         public void MockDirectory_GetFiles_ShouldThrowAnArgumentException_IfSearchPatternContainsTwoDotsFollowedByOneDirectoryPathSep(string searchPattern)
         {
@@ -841,6 +842,49 @@ namespace System.IO.Abstractions.TestingHelpers.Tests
 
             // Assert
             Assert.That(actualResult, Is.EquivalentTo(new []{XFS.Path(@"C:\Folder\.foo\"), XFS.Path(@"C:\Folder\foo.foo\")}));
+        }
+
+        [Test]
+        public void MockDirectory_GetDirectories_RelativeWithNoSubDirectories_ShouldReturnDirectories()
+        {
+            // Arrange
+            var fileSystem = new MockFileSystem();
+            fileSystem.Directory.CreateDirectory("Folder");
+
+            // Act
+            var actualResult = fileSystem.Directory.GetDirectories("Folder");
+
+            // Assert
+            Assert.That(actualResult, Is.Empty);
+        }
+
+        [TestCase(@"Folder\SubFolder")]
+        [TestCase(@"Folder")]
+        public void MockDirectory_GetDirectories_RelativeDirectory_ShouldReturnDirectories(string relativeDirPath)
+        {
+            // Arrange
+            var fileSystem = new MockFileSystem();
+            fileSystem.Directory.CreateDirectory(relativeDirPath);
+
+            // Act
+            var actualResult = fileSystem.Directory.GetDirectories(relativeDirPath);
+
+            // Assert
+            Assert.That(actualResult, Is.Empty);
+        }
+
+        [Test]
+        public void MockDirectory_GetDirectories_AbsoluteWithNoSubDirectories_ShouldReturnDirectories()
+        {
+            // Arrange
+            var fileSystem = new MockFileSystem();
+            fileSystem.Directory.CreateDirectory("Folder");
+
+            // Act
+            var actualResult = fileSystem.Directory.GetDirectories(fileSystem.Path.GetFullPath("Folder"));
+
+            // Assert
+            Assert.That(actualResult, Is.Empty);
         }
 
         [Test]
@@ -991,8 +1035,9 @@ namespace System.IO.Abstractions.TestingHelpers.Tests
             Assert.IsTrue(fileSystem.File.Exists(@"C:\NewLocation\Data\someFile.txt"));
         }
 
+        [Test]
         [TestCaseSource("GetPathsForMoving")]
-        public void MockDirectory_Move_ShouldMove(string sourceDirName, string destDirName, string filePathOne, string filePathTwo)
+        public void MockDirectory_Move_ShouldMoveDirectories(string sourceDirName, string destDirName, string filePathOne, string filePathTwo)
         {
             // Arrange
             var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
@@ -1008,6 +1053,26 @@ namespace System.IO.Abstractions.TestingHelpers.Tests
             Assert.IsFalse(fileSystem.Directory.Exists(sourceDirName));
             Assert.IsTrue(fileSystem.File.Exists(XFS.Path(destDirName + filePathOne)));
             Assert.IsTrue(fileSystem.File.Exists(XFS.Path(destDirName + filePathTwo)));
+        }
+
+        [Test]
+        public void MockDirectory_Move_ShouldMoveFiles()
+        {
+            string sourceFilePath = XFS.Path(@"c:\something\demo.txt");
+            string sourceFileContent = "this is some content";
+            var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
+            {
+                {sourceFilePath, new MockFileData(sourceFileContent)},
+                {XFS.Path(@"c:\somethingelse\dummy.txt"), new MockFileData(new byte[] {0})}
+            });
+
+            string destFilePath = XFS.Path(@"c:\somethingelse\demo1.txt");
+
+            fileSystem.Directory.Move(sourceFilePath, destFilePath);
+
+            Assert.That(fileSystem.FileExists(destFilePath), Is.True);
+            Assert.That(fileSystem.GetFile(destFilePath).TextContents, Is.EqualTo(sourceFileContent));
+            Assert.That(fileSystem.FileExists(sourceFilePath), Is.False);
         }
 
         [Test]
