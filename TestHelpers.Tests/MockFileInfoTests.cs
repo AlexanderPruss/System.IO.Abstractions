@@ -537,5 +537,17 @@ namespace System.IO.Abstractions.TestingHelpers.Tests
 
             Assert.AreEqual(fileInfo.FullName, destination);
         }
+
+        [ExpectedException(typeof(PathTooLongException))]
+        public void MockFileInfo_Constructor_ExceptionIfPathIsTooLong()
+        {
+            // Arrange
+            var fileSystem = new MockFileSystem();
+
+            //act
+            var fileInfo = fileSystem.FileInfo.FromFileName("C:\\LoremipsumdolorsitametconsecteturadipiscingelitFuscevitaenuncconsequatpellentesqueturpissedpharetralacusEtiamposuerenecjustonecfermentumInsedarcuetipsumvolutpatrutrumnecegetduiVestibulumelementumconvalliseleifendUtutnibhmalesuadalobortisipsumaiaculissapienAliquamconsequatnonurnaeuporttitor\\filesfor.days");
+
+            //assert - expect an exception
+        }
     }
 }
