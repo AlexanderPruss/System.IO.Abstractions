@@ -16,6 +16,7 @@ namespace System.IO.Abstractions.TestingHelpers
         private readonly PathBase pathField;
         private readonly IDirectoryInfoFactory directoryInfoFactory;
         private readonly IDriveInfoFactory driveInfoFactory;
+        private readonly List<string> forbiddenDirectories = new List<string>();
 
         [NonSerialized]
         private readonly PathVerifier pathVerifier;
@@ -79,6 +80,11 @@ namespace System.IO.Abstractions.TestingHelpers
         public PathVerifier PathVerifier
         {
             get { return pathVerifier; }
+        }
+
+        public void AddForbiddenDirectory(string directory)
+        {
+            forbiddenDirectories.Add(directory);
         }
 
         private string FixPath(string path, bool checkCaps = false)
@@ -156,6 +162,11 @@ namespace System.IO.Abstractions.TestingHelpers
                 if (FileExists(fixedPath) &&
                     (files[fixedPath].Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                     throw new UnauthorizedAccessException(string.Format(CultureInfo.InvariantCulture, Properties.Resources.ACCESS_TO_THE_PATH_IS_DENIED, fixedPath));
+
+                if (forbiddenDirectories.Exists(directory => fixedPath.StartsWith(directory,StringComparison.OrdinalIgnoreCase)))
+                {
+                    throw new DirectoryNotFoundException(string.Format("The parent directory of {0} cannot be written to.", fixedPath));
+                }
 
                 var lastIndex = 0;
 
