@@ -233,5 +233,93 @@ namespace System.IO.Abstractions.TestingHelpers.Tests
             Assert.Contains(@"C:\test\subtest\new\SUBDirectory\", fileSystem.AllDirectories.ToList());
             Assert.Contains(@"C:\LOUD\SUBLOUD\new\SUBDirectory\", fileSystem.AllDirectories.ToList());
         }
+
+        [Test]
+        [ExpectedException(typeof(DirectoryNotFoundException))]
+        public void MockFileSystem_AddFile_ShouldThrowExceptionForUnmappedDrives()
+        {
+            // Arrange
+            var fileSystem = new MockFileSystem();
+            fileSystem.AddForbiddenDirectory("D");
+
+            // Act
+            try
+            {
+                fileSystem.AddFile(@"C:\file.txt", "foo");
+            }
+            catch (Exception e)
+            {
+                Assert.Fail("The first file should have been added without throwing an exception.");
+            }            
+            fileSystem.AddFile(@"D:\thisWillBreak.txt", "foo");
+
+            // Assert - expect an exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(DirectoryNotFoundException))]
+        public void MockFileSystem_AddFile_ShouldThrowExceptionForUnmappedParentDirectories()
+        {
+            // Arrange
+            var fileSystem = new MockFileSystem();
+            fileSystem.AddForbiddenDirectory(@"C:\forbidden");
+
+            // Act
+            try
+            {
+                fileSystem.AddFile(@"C:\file.txt", "foo");
+            }
+            catch (Exception e)
+            {
+                Assert.Fail("The first file should have been added without throwing an exception.");
+            }
+            fileSystem.AddFile(@"C:\FORBIDDEN\thisWillBreak.txt", "foo");
+
+            // Assert - expect an exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(DirectoryNotFoundException))]
+        public void MockFileSystem_AddDirectory_ShouldThrowExceptionForUnmappedDrives()
+        {
+            // Arrange
+            var fileSystem = new MockFileSystem();
+            fileSystem.AddForbiddenDirectory("D");
+
+            // Act
+            try
+            {
+                fileSystem.AddDirectory(@"C:\file");
+            }
+            catch (Exception e)
+            {
+                Assert.Fail("The first directory should have been added without throwing an exception.");
+            }
+            fileSystem.AddDirectory(@"D:\ohno");
+
+            // Assert - expect an exception
+        }
+
+        [Test]
+        [ExpectedException(typeof(DirectoryNotFoundException))]
+        public void MockFileSystem_AddDirectory_ShouldThrowExceptionForUnmappedParentDirectories()
+        {
+            // Arrange
+            var fileSystem = new MockFileSystem();
+            fileSystem.AddForbiddenDirectory(@"D:\forbidden");
+
+            // Act
+            try
+            {
+                fileSystem.AddDirectory(@"D:\file");
+            }
+            catch (Exception e)
+            {
+                Assert.Fail("The first directory should have been added without throwing an exception.");
+            }
+            fileSystem.AddDirectory(@"D:\forbidden\ohno");
+
+            // Assert - expect an exception
+        }
     }
 }
